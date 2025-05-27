@@ -1,18 +1,16 @@
-name: "CodeQL"
+name: CodeQL
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
-  schedule:
-    - cron: '0 0 * * 0'  # Weekly scan
+    branches: [master]
+  workflow_dispatch:
 
 jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
-
     permissions:
       actions: read
       contents: read
