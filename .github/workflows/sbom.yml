@@ -1,32 +1,29 @@
-name: Generate SBOM
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
 
 on:
-  workflow_dispatch:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
 
 jobs:
-  generate-sbom:
+  build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [22.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install CycloneDX generator
-        run: npm install -g @cyclonedx/bom
-
-      - name: Generate SBOM
-        run: cyclonedx-bom -o sbom.json
-
-      - name: Upload SBOM as artifact
-        uses: actions/upload-artifact@v2.3.1
+      - uses: actions/checkout@v4
+      - run: npm install -g @cyclonedx/cdxgen
+      - run: cdxgen -o bom.json
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
         with:
           name: sbom
-          path: sbom.json
+          path: bom.json
